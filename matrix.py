@@ -284,7 +284,7 @@ class GaussianElimination:
             self.aug_values.append([0 for _ in range(self.n + 1)])
             count_zero_rows -= 1 
         
-    def solve(self, dbg=0):
+    def solve(self, dbg=0, ):
         '''
         Метод для решения СЛУ. \nВ нем вызываются методы row_ech и reduced_row_ech.
         Параметр dbg отвечает за вызов метода с подробным решением,\n в котором отображаются элементарные преобразования.
@@ -314,49 +314,4 @@ class GaussianElimination:
         return GaussianElimination(Matrix(m, n, A), Matrix(m, 1, b))
 
 
-'''
-К заданию 5. (a)
-model = GaussianElimination(
-    Matrix(4, 4, [
-                [8, -1, -14, -2],
-                [-4, 5, -2, 10],
-                [-5, 0, 10, 0],
-                [4, -5, 2, -10]
-                ]
-        ),
-    Matrix(4, 1, [
-                [-7],
-                [6],
-                [-5],
-                [-8]
-                ]
-        )
-)
-model.solve()
-'''
-
-
-'''
-К заданию 5. (б)
-model = GaussianElimination(
-    Matrix(4, 4, [
-                [8, -1, -14, -2],
-                [-4, 5, -2, 10],
-                [-5, 0, 10, 0],
-                [4, -5, 2, -10]
-                ]
-        ),
-    Matrix(4, 1, [
-                [15],
-                [-3],
-                [-10],
-                [3]
-                ]
-        )
-)
-model.solve()
-'''
-
-#model = GaussianElimination.generate_testcase(4, 4, 40)
-#model.solve()
 
