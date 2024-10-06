@@ -167,10 +167,10 @@ class GaussianElimination:
     def __init__(self, A: Matrix, b: Matrix):
         if A.m != b.m:
             raise GaussInitError()
-        if b.n != 1:
-            raise GaussInitError()
         self.m = A.m
         self.n = A.n
+        self.bm = b.m
+        self.bn = b.n
         self.coef = A.values
         self.free_c = b.values
         self.aug_values = [deepcopy(A.values[row]) + deepcopy(b.values[row]) for row in range(self.m)]
@@ -179,9 +179,9 @@ class GaussianElimination:
         ret_str = f"Size: {self.m}x{self.n}\n"
         ret_values = deepcopy(self.aug_values)
         for i in range(self.m):
-            for j in range(self.n + 1):
+            for j in range(self.n + self.bn):
                 ret_values[i][j] = str(ret_values[i][j])
-        print(tabulate(ret_values, headers=[f"x{i}" for i in range(1, self.n + 1)] + ["b"], tablefmt="grid"))
+        print(tabulate(ret_values, headers=[f"x{i}" for i in range(1, self.n + 1)] + [f"b{i}" for i in range(1, self.bn + 1)], tablefmt="grid"))
         return ret_str
     
     def e1(self, i: int, j: int, a: float, dbg=0) -> None:
@@ -191,11 +191,11 @@ class GaussianElimination:
         '''
         if dbg:
             print(f"e1({i + 1}, {j + 1}, {a})")
-        for k in range(self.n + 1):
+        for k in range(self.n + self.bn):
             self.aug_values[i][k] += self.aug_values[j][k] * a
         if dbg:
             for row in self.aug_values:
-                print(*row)
+                print(' & '.join(map(str, row)) + ' \\' + '\\')
             print('-' * 50)
     
     def e2(self, i: int, j: int, dbg=0) -> None:
@@ -210,7 +210,7 @@ class GaussianElimination:
         self.aug_values[i], self.aug_values[j] = self.aug_values[j], self.aug_values[i]
         if dbg:
             for row in self.aug_values:
-                print(*row)
+                print(' & '.join(map(str, row)) + ' \\' + '\\')
             print('-' * 50)
     
     def e3(self, i: int, a: float, dbg=0) -> None:
@@ -219,13 +219,13 @@ class GaussianElimination:
         Умножение i-ой строки на ненулевой скаляр a.
         '''
         if dbg:
-            print(f"e2({i + 1}, {a})")
+            print(f"e3({i + 1}, {a})")
         if a == 0:
             raise GaussE3Error()
         self.aug_values[i] = [num * a for num in self.aug_values[i]]
         if dbg:
             for row in self.aug_values:
-                print(*row)
+                print(' & '.join(map(str, row)) + ' \\' + '\\')
             print('-' * 50)
         
     def row_ech(self, row=0, c=0, dbg=0):
@@ -300,6 +300,13 @@ class GaussianElimination:
         print(self)
         print('-' * 50)
 
+    
+    def solve_2(self, dbg=0):
+        self.solve(dbg)
+        b_values = [[self.aug_values[i][j] for j in range(self.n, self.n + self.bn)] for i in range(0, self.m)]
+        print("X = ")
+        print(Matrix(self.bm, self.bn, b_values))
+    
     @staticmethod
     def generate_testcase(m: int, n: int, RRANGE=100):
         '''
@@ -314,4 +321,24 @@ class GaussianElimination:
         return GaussianElimination(Matrix(m, n, A), Matrix(m, 1, b))
 
 
+
+GaussianElimination(Matrix(
+    3, 3, [
+        [1, 4, 7],
+        [2, 5, 8],
+        [3, 6, 9]
+    ]
+),
+    Matrix(
+        3, 3, [
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]
+        ]
+    )
+).solve_2(1)
+
+
+#model = GaussianElimination.generate_testcase(4, 4, 20)
+#model.solve()
 
